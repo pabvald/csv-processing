@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [[ "$#" == 0 ]]; then 
+    echo -1                             # Devuelve -1 si no recibe argumentos
+    exit -1
+
+elif [[ "$#" == 1 ]]; then
+    REGEXP=$1
+    FILE="./data/CataDatosCSV.campos"   # Fichero por defecto
+
+else 
+    REGEXP=$1
+    FILE=$2                             # Fichero pasado como segundo argumento
+fi
+
+# Comprabación de que el fichero existe y se puede leer 
+if [[ ! -r $FILE ]]; then 
+   echo "El archivo '$FILE' no se puede leer"
+   exit -2
+fi 
+
+
+if egrep -q $REGEXP $FILE; then    
+   egrep -m 1 $REGEXP $FILE | sed 's/\([\d]*\) :.*/\1/' # Devuelve el número del primer campo que coincide con la exp.regular
+   exit 0
+   
+else
+    echo 0          # Devuelve 0 si ningún campo coincide con la exp. regular
+    exit 0
+fi
+
+
+

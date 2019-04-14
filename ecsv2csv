@@ -1,0 +1,10 @@
+1d                      # Borrar la primera línea 
+
+H                       # Almacenar cada línea en el hold space. 
+
+$! {d}                  # Si la línea leída no es la última, borrar el pattern space.
+$ {
+g                       # El contenido del hold space se mueve al pattern space 
+s/\([^;]\)\n/\1/g       # Se eliminan los saltos de línea que no son precedidos por ;                            
+s/^\n//g                # Se eliminan los saltos de línea  añadidos por el hold space.
+}

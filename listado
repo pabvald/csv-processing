@@ -1,0 +1,23 @@
+#!/usr/bin/awk -f
+
+BEGIN {
+
+    FS=";"                               # EL separador de campos es ;
+    lastUpdate=14                        # EL número de campo de la ultimaActualizacion es 14
+
+    if(ereg == "") { ereg=".*" }         # Si no se especifica una exp. regular, se seleccionarán todos los conjuntos de datos.
+}
+
+NR!=1 && $cf~ereg {                      # Registros que no sean el primero y en los que el campo especificado en cf coincida con la expresión regular 
+                                         # especificada en ereg
+
+    nameField=$1;                        # Guardar el valor de $1 en la variable nameField
+    gsub(/"/,"",nameField);              # Substituir las comillas dobles por nada en la variable nameField
+
+    choosenField=$cf                     # Guardar el valor de $cf en la variable choosenField
+    gsub(/"/,"",choosenField);           # Substituir las comillas dobles por nada en la variable choosenField
+
+
+    print nameField": (" ($lastUpdate) "):\n  "choosenField      # Imprimir cada conjunto de datos en el formato especificado
+}
+

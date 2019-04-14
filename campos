@@ -1,0 +1,17 @@
+#!/usr/bin/awk -f
+
+BEGIN {
+   if(separador == "") {
+       FS=";"               # Si no se especifica un separador se utiliza ; por defecto
+   } else {
+       FS=separador         
+   }
+}
+
+NR==1 {  # En la línea 1
+
+    for(nf=1; nf<=NF ; nf++) {      # Desde nf=1 hasta NF (número de campos, number of fields)
+        printf("%02d", nf)          # Imprimir número de campo añadiendo ceros a la izquierda hasta 2 posiciones.
+        print " : ",$nf             # Imprimir " : nombre_campo" 
+    }    
+}

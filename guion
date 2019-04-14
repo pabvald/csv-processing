@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+# Crea el directorio data si no existe
+[[ -d ./data ]]  || mkdir data
+
+# Descarga el fichero URL si no existe el archivo CataDatosRaw.csv con permiso de lectura
+[[ ! -r ./data/CataDatosRaw.csv ]] && rm -f ./data/CataDatosRaw.csv && curl https://datosabiertos.jcyl.es/web/jcyl/risp/es/ciencia-tecnologia/general/1284166186527.csv --output ./data/CataDatosRaw.csv  
+
+# Cambia la codificación del fichero CataDatosRaw.csv a UTF-8 si no existe el fichero CataDatosJCyL con permiso de lectura
+[[ ! -r ./data/CataDatosJCyL.csv ]] && rm -f ./data/CataDatosJCyL.csv && iconv  -f ISO-8859-1 -t UTF8 ./data/CataDatosRaw.csv --output=./data/CataDatosJCyL.csv 
+
+# Normaliza CataDatosJCyL.csv si no existe CataDatosCSV con permiso de lectura
+[[ ! -r ./data/CataDatosCSV.csv ]] && rm -f ./data/CataDatosCSV.csv &&  sed -f ./ecsv2csv ./data/CataDatosJCyL.csv > ./data/CataDatosCSV.csv
+
+# Genera un listado de los campos de CataDatosCSV.csv si no existe el fichero CataDatosCSV.campos con permiso de lectura
+[[ ! -r ./data/CataDatosCSV.campos ]] && rm -f ./data/CataDatosCSV.campo && { ./campos -v separador=";"  ./data/CataDatosCSV.csv  | sed '$d' > ./data/CataDatosCSV.campos; }
+
+# Genera el listado CataListURLs.list si no existe 
+if [[ ! -f ./data/CataListURLs.list ]]; then 
+   nURL=$(./camp2num 'Enlace.al.*' ./data/CataDatosCSV.campos)
+   ./listado -v cf=${nURL} ./data/CataDatosCSV.csv | ./convfecha > ./data/CataListURLs.list
+fi
+
+# Genera el listado CataListSectores.list si no existe
+if [[ ! -f ./data/CataListSectores.list ]]; then 
+   nSector=$(./camp2num 'Sector' ./data/CataDatosCSV.campos)
+   ./listado -v cf=${nSector} ./data/CataDatosCSV.csv | ./convfecha > ./data/CataListSectores.list
+fi
+
+# Genera el listado CataListSectorSalud.list si no existe
+if [[ ! -f ./data/CataListSectorSalud.list ]]; then 
+   nSSalud=$(./camp2num 'Sector' ./data/CataDatosCSV.campos)
+   ./listado -v cf=${nSSalud} ereg='.*salud.*' ./data/CataDatosCSV.csv | ./convfecha > ./data/CataListSectorSalud.list
+fi
+
+
+
